@@ -122,6 +122,10 @@ void UGrabber::Grab()
 		//FString HitObjectName = HitResult.GetActor()->GetActorNameOrLabel();
 		//UE_LOG(LogTemp, Display, TEXT(" Actor Name : %s"), *HitObjectName);
 
+		// Wake RB
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		HitComponent->WakeAllRigidBodies();
+
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitResult.GetComponent(),
 			NAME_None,
