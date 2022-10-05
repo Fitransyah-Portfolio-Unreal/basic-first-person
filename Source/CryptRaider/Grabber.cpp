@@ -95,21 +95,10 @@ void UGrabber::Grab()
 	{	
 		return;
 	}
-
-	FVector Start = GetComponentLocation();
-	FVector End = Start + GetForwardVector() * MaxGrabDistance;
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-	DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 2);
 	
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
 	FHitResult HitResult;
-	bool HasHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		Start, End,
-		FQuat::Identity,
-		ECC_GameTraceChannel2,
-		Sphere
-	);
+	bool HasHit = GetGrabbableInReach(HitResult);
+
 	if (HasHit)
 	{
 		//DrawDebugSphere(GetWorld(), HitResult.Location, 10, 10, FColor::Green, false, 2);
@@ -163,6 +152,21 @@ UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
 	}
 	return Result;
 }
+
+bool UGrabber::GetGrabbableInReach(FHitResult& OutHitResult) const
+{
+	bool Result;
+
+	FVector Start = GetComponentLocation();
+	FVector End = Start + GetForwardVector() * MaxGrabDistance;
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
+
+	Result = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel2,Sphere);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+	DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 2);
+	return Result;
+}
 //OUT PARAMETER
 //void UGrabber::PrintDamage(const float& Damage) 
 //{
@@ -175,6 +179,15 @@ UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
 //	OutDamage = 7;
 //	return true;
 //}
+
+//TRACE CHANNEL FOR COLLISION
+// To create :
+// Project Setting -> Collision -> Create Trace Channel
+// To find :
+// Open Projecct Folder
+// Look for Config Folder
+// Look for "DefaultEngine" file
+// Open and find the component name
 
 
 
