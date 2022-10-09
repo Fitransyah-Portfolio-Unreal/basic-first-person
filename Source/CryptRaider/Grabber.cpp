@@ -121,12 +121,17 @@ void UGrabber::Grab()
 		//FString HitObjectName = HitResult.GetActor()->GetActorNameOrLabel();
 		//UE_LOG(LogTemp, Display, TEXT(" Actor Name : %s"), *HitObjectName);
 
-		// Wake RB
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		// Simulate Phyisics
+		HitComponent->SetSimulatePhysics(true);
+
+		// Wake RB
 		HitComponent->WakeAllRigidBodies();
 
-		// Adding Tag
-		HitResult.GetActor()->Tags.Add("Grabbed");
+		// Adding Tag & Detach Actor
+		AActor* HitActor = HitResult.GetActor();
+		HitActor->Tags.Add("Grabbed");
+		HitActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitComponent,
